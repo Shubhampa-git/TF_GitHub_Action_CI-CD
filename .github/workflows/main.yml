@@ -10,33 +10,41 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # Checkout the deployment repo (TF_GitHub_Action_CI-CD)
-    - name: Checkout deployment repo
-      uses: actions/checkout@v3
+      # Checkout the deployment repo (TF_GitHub_Action_CI-CD)
+      - name: Checkout deployment repo
+        uses: actions/checkout@v3
 
-    # Checkout the Terraform module repo (TF_GitHub_Action)
-    - name: Checkout Terraform module repo
-      uses: actions/checkout@v3
-      with:
-        repository: Shubhampa-git/TF_GitHub_Action
-        token: ${{ secrets.GITHUB_TOKEN }}
-        path: terraform-module
+      # Checkout the Terraform module repo (TF_GitHub_Action)
+      - name: Checkout Terraform module repo
+        uses: actions/checkout@v3
+        with:
+          repository: Shubhampa-git/TF_GitHub_Action
+          token: ${{ secrets.GITHUB_TOKEN }}
+          path: terraform-module
 
-    # Set up Terraform
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v2
-      with:
-        terraform_version: 1.5.0
+      # Set up Terraform
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.5.0
 
-    # Initialize Terraform
-    - name: Terraform Init
-      run: terraform init
-      working-directory: ./terraform-module
+      # Initialize Terraform
+      - name: Terraform Init
+        run: terraform init
+        working-directory: ./terraform-module
 
-    # Apply Terraform
-    - name: Terraform Apply
-      run: terraform apply -auto-approve
-      working-directory: ./terraform-module
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      # Terraform Plan (optional but recommended)
+      - name: Terraform Plan
+        run: terraform plan -out=tfplan
+        working-directory: ./terraform-module
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      
+      # Apply Terraform
+      - name: Terraform Apply
+        run: terraform apply -auto-approve tfplan
+        working-directory: ./terraform-module
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
