@@ -1,4 +1,3 @@
-
 name: Terraform Apply
 
 on:
@@ -11,22 +10,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # Checkout the deployment repo
+    # Checkout the deployment repo (TF_GitHub_Action_CI-CD)
     - name: Checkout deployment repo
       uses: actions/checkout@v3
+
+    # Checkout the Terraform module repo (TF_GitHub_Action)
+    - name: Checkout Terraform module repo
+      uses: actions/checkout@v3
+      with:
+        repository: Shubhampa-git/TF_GitHub_Action
+        token: ${{ secrets.GITHUB_TOKEN }}
+        path: terraform-module
 
     # Set up Terraform
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v2
       with:
         terraform_version: 1.5.0
-
-    # Checkout the Terraform module repo
-    - name: Checkout Terraform module repo
-      uses: actions/checkout@v3
-      with:
-        repository: Shubhampa-git/TF_GitHub_Action
-        path: terraform-module
 
     # Initialize Terraform
     - name: Terraform Init
